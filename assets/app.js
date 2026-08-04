@@ -23,8 +23,12 @@ function hidden(name, value) {
 }
 
 const params = new URLSearchParams(location.search);
-['utm_source', 'utm_campaign', 'utm_medium', 'utm_content', 'fbclid'].forEach((key) => {
-  hidden(key, params.get(key) || '');
+const attributionKeys = ['utm_source', 'utm_campaign', 'utm_medium', 'utm_content'];
+const cleanUrl = new URL(`${location.origin}${location.pathname}`);
+attributionKeys.forEach((key) => {
+  const value = params.get(key) || '';
+  hidden(key, value);
+  if (value) cleanUrl.searchParams.set(key, value.slice(0, 120));
 });
 
 const dateInput = form.elements.callback_date;
@@ -33,7 +37,7 @@ dateInput.min = tomorrow.toISOString().slice(0, 10);
 
 function fieldsForStep() {
   return [...steps[current].querySelectorAll('input,select')]
-    .filter((el) => el.type !== 'hidden' && el.name !== 'website');
+    .filter((el) => el.type !== 'hidden' && el.name !== '_honey');
 }
 
 function validateStep() {
@@ -116,19 +120,16 @@ form.addEventListener('submit', (event) => {
   errorBox.textContent = '';
 
   hidden('_subject', `Vacation callback lead: ${value('first_name')} ${value('last_name')} · ${value('destination')}`);
-  hidden('_template', 'table');
-  hidden('_next', 'https://vacation-cinematic-lead-funnel.vercel.app/thanks.html');
   hidden('_replyto', value('email'));
+  hidden('submission_id', globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`);
   hidden('browser_timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
-  hidden('page_url', location.href);
+  hidden('page_url', cleanUrl.toString());
+  hidden('facebook_click_id_present', params.has('fbclid') ? 'yes' : 'no');
   hidden('completed_in_ms', String(Date.now() - startedAt));
   hidden('consent_recorded_at', new Date().toISOString());
-  hidden('consent_version', '2026-08-04-v3');
+  hidden('consent_version', '2026-08-04-v4');
   hidden('compliance_notice', 'Manual live promotional sales callback requested. No payment card collected and no charge or reservation created.');
 
-  const routeToken = atob('OGVlOWI4Y2IxOTk5ZTE1OTdkNzgyM2Q4OTExYTcwOWI=');
-  form.action = `https://formsubmit.co/${routeToken}`;
-  form.method = 'POST';
   form.submit();
 });
 
