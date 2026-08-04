@@ -78,8 +78,12 @@ function buildReview() {
 }
 
 function escapeHtml(input = '') {
-  return String(input).replace(/[&<>'\"]/g, (char) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '\"': '&quot;',
+  return String(input).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
   }[char]));
 }
 
