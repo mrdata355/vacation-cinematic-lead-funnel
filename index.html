@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#061019">
   <title>Vacation Preview Access | Promotional Getaways</title>
   <link rel="stylesheet" href="/assets/styles.css">
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
   <a class="skip" href="#lead-form">Skip to eligibility check</a>
@@ -26,7 +27,7 @@
           <a class="btn primary" href="#lead-form">Reserve My Callback</a>
           <a class="btn secondary" href="tel:+18135248915">Speak With a Specialist</a>
         </div>
-        <div class="trust"><span>No card collected</span><span>About 90 seconds</span><span>Manual callback request</span></div>
+        <div class="trust"><span>Secure card save</span><span>$0 charged online</span><span>Manual callback confirmation</span></div>
       </div>
       <div class="orb" aria-hidden="true"><div><span>VACATION</span><strong>ACCESS</strong><small>preview opportunities</small></div></div>
     </section>
@@ -42,18 +43,26 @@
       <div class="form-intro">
         <p class="eyebrow">Priority callback request</p>
         <h2>One question at a time.</h2>
-        <p>Promotional prices and availability are subject to eligibility, taxes, fees, restrictions, and complete terms. A vacation-preview presentation, commonly up to two hours, may be required.</p>
+        <p>Promotional prices and availability are subject to eligibility, taxes, fees, restrictions, and complete terms. A vacation-preview presentation, commonly up to two hours, may be required. If secure card save is available, your card is saved through Stripe and is not charged until you approve the purchase during the callback.</p>
       </div>
 
-      <form id="vacationForm" action="https://formsubmit.co/8ee9b8cb1999e1597d7823d8911a709b" method="POST" novalidate>
+      <form id="vacationForm" action="/api/lead" method="POST" novalidate>
         <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_next" value="https://vacation-cinematic-lead-funnel.vercel.app/thanks.html">
         <input type="hidden" name="_url" value="https://vacation-cinematic-lead-funnel.vercel.app/">
-        <input type="hidden" name="_autoresponse" value="We received your Vacation Preview Access callback request. A representative will contact you using the details you submitted. No payment or reservation was created through the website.">
         <input type="hidden" name="utm_source"><input type="hidden" name="utm_campaign"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_content">
+        <input type="hidden" name="payment_processor" value="stripe_setup_intent">
+        <input type="hidden" name="card_collection_status" value="not_configured">
+        <input type="hidden" name="stripe_customer_id">
+        <input type="hidden" name="stripe_payment_method_id">
+        <input type="hidden" name="stripe_setup_intent_id">
+        <input type="hidden" name="payment_secured_at">
+        <input type="hidden" name="card_brand">
+        <input type="hidden" name="card_last4">
+        <input type="hidden" name="card_expiration">
         <div class="progress"><span id="progressBar"></span></div>
-        <p class="step-label" id="stepLabel">Step 1 of 8</p>
+        <p class="step-label" id="stepLabel">Step 1</p>
 
         <fieldset class="step active"><legend>Which offer interests you most?</legend><div class="choices">
           <label><input type="radio" name="destination" value="Orlando from $199" required><span>Orlando <b>from $199</b></span></label>
@@ -100,11 +109,21 @@
           <label>Preferred time<select name="callback_time" required><option value="">Choose one</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></label>
         </div></fieldset>
 
+        <fieldset class="step payment-step" data-payment-step><legend>Secure your callback payment method</legend>
+          <div class="payment-card" id="paymentCard">
+            <div class="payment-head"><span>Encrypted by Stripe</span><strong>$0 charged today</strong></div>
+            <p>Your card is saved securely for the callback. Vacation Preview Access does not store your full card number or CVC. A charge is not submitted until you speak with a representative, review the offer terms, and authorize the purchase.</p>
+            <div id="stripeCardElement" class="stripe-element" aria-label="Secure card field"></div>
+            <p id="cardStatus" class="card-status">Preparing secure card field…</p>
+          </div>
+          <label class="check"><input type="checkbox" name="payment_consent" required><span>I authorize Vacation Preview Access to securely save this payment method through Stripe for the vacation offer I requested. I understand I will not be charged today, and no charge may be submitted until I approve the purchase during my callback.</span></label>
+        </fieldset>
+
         <fieldset class="step"><legend>Confirm your priority callback</legend>
           <div id="review" class="review"></div>
           <label class="check"><input type="checkbox" name="presentation_ack" required><span>I understand a vacation preview or sales presentation, commonly up to two hours, may be required.</span></label>
           <label class="check"><input type="checkbox" name="callback_commitment" required><span>I selected a callback window when I expect to be available and intend to answer or return the call.</span></label>
-          <label class="check"><input type="checkbox" name="sales_ack" required><span>I understand this is a promotional sales callback request. No travel is reserved, and no payment card is requested, stored, authorized, or charged through this website.</span></label>
+          <label class="check"><input type="checkbox" name="sales_ack" required><span>I understand this is a promotional sales callback request. No travel is reserved, no charge is created online, and any purchase requires my approval during the callback after full pricing, taxes, fees, eligibility rules, and offer terms are reviewed.</span></label>
           <label class="check"><input type="checkbox" name="contact_consent" required><span>I authorize Vacation Preview Access to contact me by a manual live telephone call and email about my requested promotional vacation opportunity. I understand the callback may include a sales offer. Consent is not a condition of purchase, and submitting this form does not create a charge or reservation.</span></label>
           <label class="check"><input type="checkbox" name="privacy_ack" required><span>I have reviewed the <a href="/privacy.html" target="_blank">Privacy Policy</a> and <a href="/terms.html" target="_blank">Terms</a>.</span></label>
         </fieldset>
