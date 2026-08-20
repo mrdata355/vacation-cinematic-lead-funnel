@@ -35,6 +35,13 @@ const dateInput = form.elements.callback_date;
 const tomorrow = new Date(Date.now() + 86400000);
 if (dateInput) dateInput.min = tomorrow.toISOString().slice(0, 10);
 
+const last4Input = form.elements.card_last4;
+if (last4Input) {
+  last4Input.addEventListener('input', () => {
+    last4Input.value = last4Input.value.replace(/\D/g, '').slice(0, 4);
+  });
+}
+
 function refreshSteps() {
   steps = [...document.querySelectorAll('.step')];
   current = Math.min(current, steps.length - 1);
@@ -87,7 +94,7 @@ function buildReview() {
     ['Travel window', value('travel_window')],
     ['Name', `${value('first_name')} ${value('last_name')}`],
     ['Phone', value('phone')],
-    ['Card', `${value('card_type')} · exp ${value('card_exp_month')}/${value('card_exp_year')}`],
+    ['Card', `${value('card_type')} ending ${value('card_last4')} · exp ${value('card_exp_month')}/${value('card_exp_year')}`],
     ['Callback', `${value('callback_date')} · ${value('callback_time')}`],
   ].map(([key, val]) => `<div><span>${key}</span><strong>${escapeHtml(val)}</strong></div>`).join('');
 }
@@ -145,8 +152,8 @@ form.addEventListener('submit', async (event) => {
   hidden('facebook_click_id_present', params.has('fbclid') ? 'yes' : 'no');
   hidden('completed_in_ms', String(Date.now() - startedAt));
   hidden('consent_recorded_at', new Date().toISOString());
-  hidden('consent_version', '2026-08-19-v7-card-slot');
-  hidden('compliance_notice', 'Priority promotional vacation callback requested. Card brand and expiration only collected for callback confirmation. No full card number, CVC, online payment, authorization, hold, or reservation created online.');
+  hidden('consent_version', '2026-08-19-v8-last4-slot');
+  hidden('compliance_notice', 'Priority promotional vacation callback requested. Card brand, last 4, and expiration collected for callback confirmation. No full card number, CVC, online payment, authorization, hold, or reservation created online.');
 
   const payload = Object.fromEntries(new FormData(form).entries());
 
