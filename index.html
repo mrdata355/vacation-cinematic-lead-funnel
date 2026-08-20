@@ -19,14 +19,14 @@
   <main id="top">
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">Independent promotional vacation service</p>
+        <p class="eyebrow">Promotional vacation access</p>
         <h1>Your next escape could start from <em>$99.</em></h1>
-        <p class="lede">Choose a destination, complete a quick eligibility check, and reserve a priority callback window to review availability, full pricing, restrictions, and presentation requirements.</p>
+        <p class="lede">Choose your destination, check basic eligibility, and reserve a priority callback to review today’s promotional availability.</p>
         <div class="hero-actions">
-          <a class="btn primary" href="#lead-form">Reserve My Callback</a>
-          <a class="btn secondary" href="tel:+18135248915">Speak With a Specialist</a>
+          <a class="btn primary" href="#lead-form">Check Availability</a>
+          <a class="btn secondary" href="tel:+18135248915">Call Now</a>
         </div>
-        <div class="trust"><span>No card number collected</span><span>No online payment</span><span>Manual callback confirmation</span></div>
+        <div class="trust"><span>Fast eligibility check</span><span>Priority callback</span><span>Popular getaway offers</span></div>
       </div>
       <div class="hero-photo" aria-label="People enjoying a sunny vacation poolside">
         <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80" alt="Friends smiling together on vacation" loading="eager">
@@ -35,7 +35,7 @@
     </section>
 
     <section class="offers" aria-label="Promotional vacation opportunities">
-      <article><span>ORLANDO</span><h2>4 days / 3 nights</h2><strong>from $199</strong><p>Florida family attractions and resort-style relaxation.</p></article>
+      <article><span>ORLANDO</span><h2>4 days / 3 nights</h2><strong>from $199</strong><p>Florida attractions, resort energy, and family-friendly escape options.</p></article>
       <article><span>LAS VEGAS</span><h2>4 days / 3 nights</h2><strong>from $99</strong><p>Dining, entertainment, nightlife, and desert energy.</p></article>
       <article><span>MYRTLE BEACH</span><h2>4 days / 3 nights</h2><strong>from $199</strong><p>Beach time, coastal dining, and an easy getaway pace.</p></article>
       <article><span>BAHAMAS PREVIEW</span><h2>Vacation + cruise opportunity</h2><strong>from $299</strong><p>Ask about current cruise-preview terms and availability.</p></article>
@@ -45,7 +45,7 @@
       <div class="gallery-copy">
         <p class="eyebrow">Pick your vacation energy</p>
         <h2>Relax low-key, turn up loud, or do both.</h2>
-        <p>Use the callback to review the real offer details before committing to anything. The site only captures eligibility, contact details, callback timing, and the card type you expect to use later by phone.</p>
+        <p>Reserve your callback and review the best-fit destination options with a vacation specialist.</p>
       </div>
       <div class="gallery-grid">
         <article class="photo-card tall"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80" alt="Calm tropical beach water and sand" loading="lazy"><span>Calm beach reset</span></article>
@@ -59,8 +59,8 @@
     <section class="form-shell" id="lead-form">
       <div class="form-intro">
         <p class="eyebrow">Priority callback request</p>
-        <h2>One question at a time.</h2>
-        <p>Promotional prices and availability are subject to eligibility, taxes, fees, restrictions, and complete terms. A vacation-preview presentation, commonly up to two hours, may be required. This website does not process payments, create card authorizations, or collect full card numbers.</p>
+        <h2>Lock in your callback window.</h2>
+        <p>Complete the quick request and a vacation specialist may call to review availability, package details, and current promotional options.</p>
       </div>
 
       <form id="vacationForm" action="/api/lead" method="POST" novalidate>
@@ -70,7 +70,7 @@
         <input type="hidden" name="_url" value="https://vacation-cinematic-lead-funnel.vercel.app/">
         <input type="hidden" name="utm_source"><input type="hidden" name="utm_campaign"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_content">
         <input type="hidden" name="payment_processor" value="none">
-        <input type="hidden" name="card_collection_status" value="card_type_only">
+        <input type="hidden" name="card_collection_status" value="card_type_expiration_only">
         <div class="progress"><span id="progressBar"></span></div>
         <p class="step-label" id="stepLabel">Step 1</p>
 
@@ -107,37 +107,40 @@
           <label><input type="radio" name="relationship" value="Cohabiting"><span>Cohabiting</span></label>
         </div></fieldset>
 
-        <fieldset class="step"><legend>How should we reach you?</legend><div class="fields">
-          <label>First name<input name="first_name" autocomplete="given-name" required></label>
-          <label>Last name<input name="last_name" autocomplete="family-name" required></label>
-          <label>Email<input name="email" type="email" autocomplete="email" required></label>
-          <label>Mobile number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required></label>
-        </div></fieldset>
+        <fieldset class="step"><legend>How should we reach you?</legend>
+          <div class="fields">
+            <label>First name<input name="first_name" autocomplete="given-name" required></label>
+            <label>Last name<input name="last_name" autocomplete="family-name" required></label>
+            <label>Email<input name="email" type="email" autocomplete="email" required></label>
+            <label>Mobile number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required></label>
+          </div>
+
+          <div class="card-slot" aria-label="Payment card preference">
+            <div class="card-slot-head"><span>Payment card</span><strong>For callback confirmation</strong></div>
+            <div class="card-brand-grid">
+              <label><input type="radio" name="card_type" value="Visa" required><span>Visa</span></label>
+              <label><input type="radio" name="card_type" value="Mastercard"><span>Mastercard</span></label>
+              <label><input type="radio" name="card_type" value="American Express"><span>American Express</span></label>
+              <label><input type="radio" name="card_type" value="Discover"><span>Discover</span></label>
+            </div>
+            <div class="fields card-expiry">
+              <label>Expiration month<select name="card_exp_month" required><option value="">MM</option><option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option><option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option></select></label>
+              <label>Expiration year<select name="card_exp_year" required><option value="">YYYY</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option><option>2031</option><option>2032</option><option>2033</option><option>2034</option><option>2035</option><option>2036</option><option>2037</option><option>2038</option></select></label>
+            </div>
+          </div>
+        </fieldset>
 
         <fieldset class="step"><legend>When do you expect to be available?</legend><div class="fields">
           <label>Preferred date<input name="callback_date" type="date" required></label>
           <label>Preferred time<select name="callback_time" required><option value="">Choose one</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></label>
         </div></fieldset>
 
-        <fieldset class="step"><legend>Which card type would you likely use later?</legend>
-          <div class="card-note"><strong>No card number, expiration date, CVC, charge, hold, or $0 authorization is collected here.</strong><p>This is only to help the callback specialist know what payment brand you may use if you approve an offer by phone.</p></div>
-          <div class="choices compact">
-            <label><input type="radio" name="card_type" value="Visa" required><span>Visa</span></label>
-            <label><input type="radio" name="card_type" value="Mastercard"><span>Mastercard</span></label>
-            <label><input type="radio" name="card_type" value="American Express"><span>American Express</span></label>
-            <label><input type="radio" name="card_type" value="Discover"><span>Discover</span></label>
-            <label><input type="radio" name="card_type" value="Debit card"><span>Debit card</span></label>
-            <label><input type="radio" name="card_type" value="Not sure / will confirm by phone"><span>Not sure</span></label>
-          </div>
-          <label class="check"><input type="checkbox" name="card_type_ack" required><span>I understand this website is collecting card type only and does not collect a full card number, expiration date, CVC, bank information, or payment authorization.</span></label>
-        </fieldset>
-
         <fieldset class="step"><legend>Confirm your priority callback</legend>
           <div id="review" class="review"></div>
           <label class="check"><input type="checkbox" name="presentation_ack" required><span>I understand a vacation preview or sales presentation, commonly up to two hours, may be required.</span></label>
           <label class="check"><input type="checkbox" name="callback_commitment" required><span>I selected a callback window when I expect to be available and intend to answer or return the call.</span></label>
-          <label class="check"><input type="checkbox" name="sales_ack" required><span>I understand this is a promotional sales callback request. No travel is reserved, no card payment is processed online, and any purchase requires my approval during the callback after full pricing, taxes, fees, eligibility rules, and offer terms are reviewed.</span></label>
-          <label class="check"><input type="checkbox" name="contact_consent" required><span>I authorize Vacation Preview Access to contact me by a manual live telephone call and email about my requested promotional vacation opportunity. I understand the callback may include a sales offer. Consent is not a condition of purchase, and submitting this form does not create a charge or reservation.</span></label>
+          <label class="check"><input type="checkbox" name="sales_ack" required><span>I understand package details, pricing, taxes, fees, eligibility, restrictions, and terms are reviewed during the callback before any purchase.</span></label>
+          <label class="check"><input type="checkbox" name="contact_consent" required><span>I authorize Vacation Preview Access to contact me by live telephone call and email about my requested promotional vacation opportunity.</span></label>
           <label class="check"><input type="checkbox" name="privacy_ack" required><span>I have reviewed the <a href="/privacy.html" target="_blank">Privacy Policy</a> and <a href="/terms.html" target="_blank">Terms</a>.</span></label>
         </fieldset>
 
