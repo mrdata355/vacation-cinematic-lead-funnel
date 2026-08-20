@@ -21,6 +21,7 @@ The contact step collects:
 - Email
 - Mobile number
 - Card brand: Visa, Mastercard, American Express, or Discover
+- Last 4 card digits
 - Expiration month/year
 
 This project does not use Stripe or any payment processor. It does not collect full card numbers or CVC codes, and it does not create online authorizations, holds, charges, deposits, or reservations.
