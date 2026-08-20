@@ -5,7 +5,7 @@ Cinematic, mobile-first promotional vacation lead funnel for Vercel.
 ## Offers
 
 - Orlando: 4 days / 3 nights from $199
-- Las Vegas: 4 days / 3 nights from $99
+- Las Vegas: 4 days / 3 nights from $199
 - Myrtle Beach: 4 days / 3 nights from $199
 - Bahamas vacation + cruise preview opportunity from $299
 
