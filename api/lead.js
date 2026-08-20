@@ -1,15 +1,16 @@
 const crypto = require('crypto');
 
 const NOTIFY_EMAIL = process.env.LEAD_NOTIFY_TO || 'mrdata0501@gmail.com';
-const CONSENT_VERSION = '2026-08-19-v6-no-stripe';
-const CONTACT_TEXT = 'Manual live telephone call and email authorized for the requested promotional vacation opportunity. Callback may include a sales offer. Consent is not a condition of purchase. No online charge or reservation is created.';
+const CONSENT_VERSION = '2026-08-19-v7-card-slot';
+const CONTACT_TEXT = 'Live telephone call and email authorized for the requested promotional vacation opportunity. Callback may include a sales offer. Consent is not a condition of purchase.';
 const CALLBACK_TEXT = 'Customer selected a callback window and stated they expect to be available and intend to answer or return the call.';
-const SALES_TEXT = 'Customer understands this is a promotional sales callback request. No travel is reserved, no card payment is processed online, and any purchase requires approval during the callback after full pricing, taxes, fees, eligibility rules, and offer terms are reviewed.';
-const CARD_TYPE_TEXT = 'Website collects card type only for callback preparation. No card number, expiration date, CVC, bank information, authorization, hold, charge, payment processing, or reservation is created online.';
+const SALES_TEXT = 'Customer understands package details, pricing, taxes, fees, eligibility, restrictions, and terms are reviewed during the callback before any purchase.';
+const CARD_SLOT_TEXT = 'Website collects card brand and expiration month/year for callback preparation only. No full card number, CVC, online payment, authorization, hold, or reservation is created online.';
 const PRIVACY_TEXT = 'Customer reviewed the Privacy Policy and Terms before submitting.';
 const FIELDS = [
-  'destination','travel_window','age_18_plus','employment','relationship','first_name','last_name','email','phone','callback_date','callback_time',
-  'card_type','card_type_ack','presentation_ack','contact_consent','callback_commitment','sales_ack','privacy_ack',
+  'destination','travel_window','age_18_plus','employment','relationship','first_name','last_name','email','phone',
+  'card_type','card_exp_month','card_exp_year','callback_date','callback_time',
+  'presentation_ack','contact_consent','callback_commitment','sales_ack','privacy_ack',
   'payment_processor','card_collection_status','utm_source','utm_campaign','utm_medium','utm_content','browser_timezone','page_url','completed_in_ms','facebook_click_id_present','consent_recorded_at','compliance_notice'
 ];
 
@@ -38,6 +39,17 @@ async function readBody(req) {
   return Object.fromEntries(new URLSearchParams(raw));
 }
 
+function validCardExpiration(month, year) {
+  const mm = Number(month);
+  const yy = Number(year);
+  if (!Number.isInteger(mm) || mm < 1 || mm > 12) return false;
+  if (!Number.isInteger(yy) || yy < 2026 || yy > 2038) return false;
+  const now = new Date();
+  const currentMonth = now.getUTCMonth() + 1;
+  const currentYear = now.getUTCFullYear();
+  return yy > currentYear || (yy === currentYear && mm >= currentMonth);
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return reply(res, 405, { error: 'Method not allowed' });
   if (Number(req.headers['content-length'] || 0) > 30000) return reply(res, 413, { error: 'Request too large' });
@@ -47,7 +59,7 @@ module.exports = async function handler(req, res) {
     if (body.website || body._honey) return reply(res, 200, { ok: true });
     if (Number(body.completed_in_ms || 0) < 5000) return reply(res, 400, { error: 'Please complete the form before submitting.' });
 
-    const required = ['destination','travel_window','age_18_plus','employment','relationship','first_name','last_name','email','phone','callback_date','callback_time','card_type','card_type_ack','presentation_ack','contact_consent','callback_commitment','sales_ack','privacy_ack'];
+    const required = ['destination','travel_window','age_18_plus','employment','relationship','first_name','last_name','email','phone','card_type','card_exp_month','card_exp_year','callback_date','callback_time','presentation_ack','contact_consent','callback_commitment','sales_ack','privacy_ack'];
     for (const key of required) {
       if (!clean(body[key])) return reply(res, 400, { error: 'Please complete every required field.' });
     }
@@ -60,6 +72,9 @@ module.exports = async function handler(req, res) {
     if (clean(body.phone, 40).replace(/\D/g, '').length < 10) {
       return reply(res, 400, { error: 'Enter a valid mobile number.' });
     }
+    if (!validCardExpiration(body.card_exp_month, body.card_exp_year)) {
+      return reply(res, 400, { error: 'Enter a valid card expiration date.' });
+    }
 
     const lead = {
       lead_id: crypto.randomUUID(),
@@ -68,7 +83,7 @@ module.exports = async function handler(req, res) {
       contact_consent_record: CONTACT_TEXT,
       callback_commitment_record: CALLBACK_TEXT,
       sales_disclosure_record: SALES_TEXT,
-      card_type_disclosure_record: CARD_TYPE_TEXT,
+      card_slot_record: CARD_SLOT_TEXT,
       privacy_record: PRIVACY_TEXT,
       user_agent: clean(req.headers['user-agent'], 500),
     };
@@ -76,8 +91,8 @@ module.exports = async function handler(req, res) {
     for (const key of FIELDS) lead[key] = clean(body[key], key === 'page_url' ? 900 : 500);
 
     lead.email = lead.email.toLowerCase();
+    lead.card_expiration = `${lead.card_exp_month}/${lead.card_exp_year}`;
     lead.card_number_collected = 'no';
-    lead.expiration_collected = 'no';
     lead.cvc_collected = 'no';
     lead.online_payment_processed = 'no';
     lead.online_authorization_or_hold_created = 'no';
@@ -88,7 +103,7 @@ module.exports = async function handler(req, res) {
 
     const form = new URLSearchParams();
     for (const [key, value] of Object.entries(lead)) form.set(key, value);
-    form.set('_subject', `Vacation callback lead: ${lead.first_name} ${lead.last_name} · ${lead.destination} · ${lead.card_type}`);
+    form.set('_subject', `Vacation callback lead: ${lead.first_name} ${lead.last_name} · ${lead.destination} · ${lead.card_type} exp ${lead.card_expiration}`);
     form.set('_template', 'table');
     form.set('_replyto', lead.email);
     form.set('_url', lead.page_url || 'https://vacation-cinematic-lead-funnel.vercel.app/');
@@ -101,7 +116,7 @@ module.exports = async function handler(req, res) {
         accept: 'text/html,application/json',
         origin: 'https://vacation-cinematic-lead-funnel.vercel.app',
         referer: lead.page_url || 'https://vacation-cinematic-lead-funnel.vercel.app/',
-        'user-agent': 'Mozilla/5.0 VacationPreviewAccess/3.1',
+        'user-agent': 'Mozilla/5.0 VacationPreviewAccess/3.2',
       },
       body: form.toString(),
       redirect: 'manual',
