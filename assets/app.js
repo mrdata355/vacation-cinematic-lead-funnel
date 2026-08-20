@@ -10,6 +10,7 @@ const review = document.querySelector('#review');
 const result = document.querySelector('#result');
 let current = 0;
 const startedAt = Date.now();
+const FORM_SUBMIT_ENDPOINT = 'https://formsubmit.co/mrdata0501@gmail.com';
 
 function hidden(name, value) {
   let el = form.querySelector(`input[name="${name}"]`);
@@ -139,7 +140,7 @@ backBtn.addEventListener('click', () => {
   render();
 });
 
-form.addEventListener('submit', async (event) => {
+form.addEventListener('submit', (event) => {
   event.preventDefault();
   if (!validateStep()) return;
 
@@ -152,24 +153,16 @@ form.addEventListener('submit', async (event) => {
   hidden('facebook_click_id_present', params.has('fbclid') ? 'yes' : 'no');
   hidden('completed_in_ms', String(Date.now() - startedAt));
   hidden('consent_recorded_at', new Date().toISOString());
-  hidden('consent_version', '2026-08-19-v8-last4-slot');
+  hidden('consent_version', '2026-08-19-v9-direct-formsubmit');
   hidden('compliance_notice', 'Priority promotional vacation callback requested. Card brand, last 4, and expiration collected for callback confirmation. No full card number, CVC, online payment, authorization, hold, or reservation created online.');
+  hidden('_replyto', value('email'));
+  hidden('_captcha', 'false');
+  hidden('_subject', `Vacation callback lead: ${value('first_name')} ${value('last_name')} · ${value('destination')} · ${value('card_type')} ending ${value('card_last4')}`);
 
-  const payload = Object.fromEntries(new FormData(form).entries());
-
-  try {
-    const response = await fetch('/api/lead', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.ok) throw new Error(data.error || 'We could not submit your request.');
-    location.href = '/thanks.html';
-  } catch (error) {
-    setError(error.message || 'We could not submit your request. Please call (813) 524-8915.');
-    setBusy(false);
-  }
+  form.action = FORM_SUBMIT_ENDPOINT;
+  form.method = 'POST';
+  form.enctype = 'application/x-www-form-urlencoded';
+  HTMLFormElement.prototype.submit.call(form);
 });
 
 render();
