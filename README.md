@@ -11,11 +11,19 @@ Cinematic, mobile-first promotional vacation lead funnel for Vercel.
 
 All offers remain subject to eligibility, availability, taxes, fees, restrictions, complete terms, and any required vacation-preview presentation.
 
-## Current payment posture
+## Final production funnel
 
-This project does **not** use Stripe or any payment processor.
+The form is optimized for fast customer signup and Zeely traffic.
 
-The form collects card type only, such as Visa, Mastercard, American Express, Discover, debit card, or not sure. It does **not** collect full card numbers, expiration dates, CVC codes, bank data, authorizations, holds, $0 transactions, charges, deposits, or reservations.
+The contact step collects:
+
+- Name
+- Email
+- Mobile number
+- Card brand: Visa, Mastercard, American Express, or Discover
+- Expiration month/year
+
+This project does not use Stripe or any payment processor. It does not collect full card numbers or CVC codes, and it does not create online authorizations, holds, charges, deposits, or reservations.
 
 ## Lead delivery
 
@@ -43,4 +51,4 @@ The landing page includes tasteful lifestyle imagery for both calm vacation mood
 4. Test privacy and terms links.
 5. Verify every advertised price and eligibility rule with the authorized provider.
 6. Add approved analytics and pixels only after privacy and consent review.
-7. Do not add ordinary HTML inputs for card numbers, expiration dates, or CVC codes unless a PCI-compliant payment provider and legal/payment review are completed first.
+7. Do not add ordinary HTML inputs for full card numbers or CVC codes unless a PCI-compliant payment provider and legal/payment review are completed first.
